@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="modal-content">
+        <h3>Add New Event</h3>
+        {{ form_start(eventForm) }}
+        {{ form_widget(eventForm) }}
+        <button type="submit">Add Event</button>
+        {{ form_end(eventForm) }}
+        <button onclick="window.history.back()">Close</button>
+    </div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{# templates/admin/hr_dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}HR Dashboard{% endblock %}
+
+{% block body %}
+    <div class="dashboard" style="background-color: #f0f0f0; padding: 20px;">
+        <aside class="sidebar" style="background-color: #d1d1d1;">
+            <div class="logo" style="color: #333;">HR Panel</div>
+            <ul>
+                <li class="active" onclick="showSection('home')" style="cursor: pointer;"><i>🏠</i> Home</li>
+                <li onclick="showSection('manageEmployees')" style="cursor: pointer;"><i>👥</i> Manage Employees</li>
+                <li onclick="showSection('manageTasks')" style="cursor: pointer;"><i>📝</i> Manage Tasks</li>
+                <li onclick="showSection('manageEvents')" style="cursor: pointer;"><i>📅</i> Manage Events</li>
+            </ul>
+        </aside>
+
+        <main class="main" style="margin-left: 220px;">
+            <section id="home" class="section">
+                <header><h1>Welcome, HR Admin!</h1></header>
+                <p>Select a section from the sidebar to begin managing employees, tasks, and events.</p>
+            </section>
+
+            <section id="manageEmployees" class="section hidden manage-section" style="background-color: #e0e0e0; padding: 20px;">
+                <h2>Manage Employees</h2>
+                <button class="add-btn" style="background-color: #4CAF50; color: white;" onclick="showModal('addEmployeeModal')">Add New Employee</button>
+                <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                    <tr style="background-color: #d1d1d1; color: #333;">
+                        <th>Employee Name</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for employee in users %}
+                        <tr style="background-color: #f9f9f9;">
+                            <td>{{ employee.username }}</td>
+                            <td>{{ employee.role }}</td>
+                            <td>
+                                <button class="status-btn {{ employee.isActive ? 'active-status' : 'inactive-status' }}" onclick="toggleStatus(this)">
+                                    {{ employee.isActive ? 'Active' : 'Inactive' }}
+                                </button>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_edit_user', {'id': employee.id}) }}" class="action-btn edit" style="background-color: #ffa500; color: white;">Edit</a>
+                                <button class="action-btn delete" onclick="deleteEmployee()" style="background-color: #f44336; color: white;">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="manageTasks" class="section hidden manage-section" style="background-color: #e0e0e0; padding: 20px;">
+                <h2>Manage Tasks</h2>
+                <button class="add-btn" style="background-color: #4CAF50; color: white;" onclick="showModal('addTaskModal')">Add New Task</button>
+                <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                    <tr style="background-color: #d1d1d1; color: #333;">
+                        <th>Task Name</th>
+                        <th>Assigned To</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in tasks %}
+                        <tr style="background-color: #f9f9f9;">
+                            <td>{{ task.taskName }}</td>
+                            <td>{{ task.assignedTo }}</td>
+                            <td>
+                                <button class="status-btn {{ task.isActive ? 'active-status' : 'inactive-status' }}" onclick="toggleStatus(this)">
+                                    {{ task.isActive ? 'Active' : 'Inactive' }}
+                                </button>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_edit_task', {'id': task.id}) }}" class="action-btn edit" style="background-color: #ffa500; color: white;">Edit</a>
+                                <button class="action-btn delete" onclick="deleteTask()" style="background-color: #f44336; color: white;">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="manageEvents" class="section hidden manage-section" style="background-color: #e0e0e0; padding: 20px;">
+                <h2>Manage Events</h2>
+                <button class="add-btn" style="background-color: #4CAF50; color: white;" onclick="showModal('addEventModal')">Add New Event</button>
+                <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                    <tr style="background-color: #d1d1d1; color: #333;">
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for event in events %}
+                        <tr style="background-color: #f9f9f9;">
+                            <td>{{ event.eventName }}</td>
+                            <td>{{ event.eventDate|date('Y-m-d') }}</td>
+                            <td>
+                                <button class="status-btn {{ event.isActive ? 'active-status' : 'inactive-status' }}" onclick="toggleStatus(this)">
+                                    {{ event.isActive ? 'Active' : 'Inactive' }}
+                                </button>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_edit_event', {'id': event.id}) }}" class="action-btn edit" style="background-color: #ffa500; color: white;">Edit</a>
+                                <button class="action-btn delete" onclick="deleteEvent()" style="background-color: #f44336; color: white;">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach((section) => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,16 @@
+doctrine:
+    dbal:
+        driver: 'pdo_mysql'
+        url: '%env(DATABASE_URL)%'
+        server_version: '5.7'  # Adaptez cette version selon votre serveur MySQL
+        charset: utf8mb4
+    orm:
+        auto_generate_proxy_classes: true
+        entity_managers:
+            default:
+                mappings:
+                    App:
+                        type: attribute  # Si vous utilisez les attributs PHP pour la configuration des entités
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        is_bundle: false

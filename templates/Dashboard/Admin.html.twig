@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Manage Tasks and Events</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+        }
+        .hidden {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+            position: relative;
+        }
+
+        .modal input, .modal select, .modal textarea, .modal button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .table td {
+            background-color: #ecf0f1;
+        }
+
+        .table tr:hover {
+            background-color: #bdc3c7;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* Bouton Edit */
+        .action-btn.edit {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #388e3c; /* Border pour ajouter un contour */
+        }
+
+        .action-btn.edit:hover {
+            background-color: #45a049;
+            border-color: #2c6c31; /* Changement de couleur au survol */
+        }
+
+        .action-btn.edit:active {
+            background-color: #388e3c;
+            border-color: #2c6c31;
+            transform: scale(0.98); /* Réduction légère du bouton lors du clic */
+        }
+
+        .action-btn.edit:focus {
+            outline: none; /* Retirer la bordure par défaut */
+            box-shadow: 0 0 5px rgba(0, 123, 0, 0.6); /* Ombre de focus */
+        }
+
+        /* Bouton Delete */
+        .action-btn.delete {
+            background-color: #f44336;
+            color: white;
+            border: 1px solid #d32f2f; /* Border pour ajouter un contour */
+        }
+
+        .action-btn.delete:hover {
+            background-color: #e53935;
+            border-color: #c62828; /* Changement de couleur au survol */
+        }
+
+        .action-btn.delete:active {
+            background-color: #c62828;
+            border-color: #b71c1c;
+            transform: scale(0.98); /* Réduction légère du bouton lors du clic */
+        }
+
+        .action-btn.delete:focus {
+            outline: none; /* Retirer la bordure par défaut */
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.6); /* Ombre de focus */
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar ul li.active, .sidebar ul li:hover {
+            background-color: #34495e;
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #2980b9;
+        }
+
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            position: relative;
+        }
+
+        .modal input, .modal select, .modal button {
+            width: 100%;
+            margin: 12px 0;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); /* Ombre au survol */
+        }
+
+        .add-btn:active {
+            background-color: #004085;
+            transform: scale(0.98); /* Réduit légèrement le bouton lors du clic */
+        }
+
+        .add-btn:focus {
+            outline: none; /* Retirer la bordure par défaut */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.6); /* Ombre de focus */
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="logo">Admin Dashboard</div>
+        <ul>
+            <li class="active" onclick="showSection('home')"><i>🏠</i> Home</li>
+            <li onclick="showSection('manageUsers')"><i>👥</i> Manage Users</li>
+            <li onclick="showSection('manageTasks')"><i>📝</i> Manage Tasks</li>
+            <li onclick="showSection('manageEvents')"><i>📅</i> Manage Events</li>
+        </ul>
+    </aside>
+
+    <main class="main">
+        <section id="home" class="section">
+            <header><h1>Welcome, Admin!</h1></header>
+            <p>Select a section from the sidebar to begin.</p>
+        </section>
+
+        <!-- Manage Users Section -->
+        <section id="manageUsers" class="section hidden manage-section">
+            <h2>Manage Users</h2>
+            <button class="add-btn" onclick="showModal('addUserModal')">Add New User</button><br><br>
+
+
+
+            <!-- Table des utilisateurs -->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.status }}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="showEditUserModal('{{ user.id }}', '{{ user.username }}', '{{ user.role }}', '{{ user.status }}')">Edit</button>
+                            <a href="{{ path('admin_delete_user', {id: user.id}) }}" class="action-btn delete">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Liens de Pagination -->
+            {% if section == 'users' %}
+                <div class="pagination">
+                    <p>Page {{ currentPage }} of {{ totalPages }}</p>
+                    <ul>
+                        <li>
+                            {% if currentPage > 1 %}
+                                <a href="{{ path('admin_manage_users', { 'page': currentPage - 1 }) }}">Previous</a>
+                            {% else %}
+                                Previous
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if currentPage < totalPages %}
+                                <a href="{{ path('admin_manage_users', { 'page': currentPage + 1 }) }}">Next</a>
+                            {% else %}
+                                Next
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+
+
+
+
+        </section>
+        <section id="manageTasks" class="section hidden">
+            <h2>Manage Tasks</h2>
+            <button class="add-btn" onclick="showModal('addtaskModal')">Add New Task</button><br><br>
+            <!-- Table des tâches -->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                {% set tasks = tasks is defined ? tasks : [] %}
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.TaskId }}</td>
+                        <td>{{ task.description }}</td>
+                        <td>{{ task.status }}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="editTask({{ task.TaskId }})">Edit</button>
+                            <button class="action-btn delete" onclick="deleteTask({{ task.TaskId}})">Delete</button>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">No tasks found.</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+</div>
+
+<!-- Modal for Adding User -->
+<div id="addUserModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal('addUserModal')">&times;</button>
+        <h3>Add New User</h3>
+        <form id="addUserForm" action="{{ path('admin_add_user') }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('add_user') }}">
+
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="text" name="role" placeholder="Role" required>
+            <select name="status" required>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Add User</button>
+        </form>
+
+    </div>
+</div>
+
+<!-- Modal pour Éditer un Utilisateur -->
+<div id="edituserModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal('edituserModal')">&times;</button>
+        <h3>Editer l'Utilisateur</h3>
+        <form id="editUserForm" action="{{ path('admin_edit_user', {id: 'USER_ID'}) }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('edit_user') }}">
+            <input type="hidden" name="id" id="editUserId">
+
+            <input type="text" name="username" id="editUsername" placeholder="Nom d'utilisateur" required>
+            <input type="text" name="role" id="editRole" placeholder="Rôle" required>
+            <select name="status" id="editStatus" required>
+                <option value="active">Actif</option>
+                <option value="inactive">Inactif</option>
+            </select>
+            <input type="password" name="password" id="editPassword" placeholder="Nouveau mot de passe (facultatif)">
+            <button type="submit">Sauvegarder les Modifications</button>
+        </form>
+    </div>
+    <!-- Modal pour Ajouter une Tâche -->
+    <div id="addtaskModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addtaskModal')">&times;</button>
+            <h3>Add New Task</h3>
+            <form id="addtaskForm">
+                <input type="text" id="taskName" placeholder="Task Name" required>
+                <select id="taskStatus" required>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <button type="button" onclick="addTask()">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour Éditer une Tâche -->
+    <div id="edittaskModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('edittaskModal')">&times;</button>
+            <h3>Edit Task</h3>
+            <form id="editTaskForm">
+                <input type="hidden" id="editTaskId">
+                <input type="text" id="editTaskName" placeholder="Task Name" required>
+                <select id="editTaskStatus" required>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <button type="button" onclick="saveTask()">Save Changes</button>
+            </form>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+    <script>
+        const users = [];
+        const tasks = [];
+
+        // Fonction pour afficher une section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            if (sectionId === 'manageTasks') {
+                updateTaskTable();
+            }
+        }
+
+        // Fonction pour afficher un modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            document.querySelector(`#${modalId} input, #${modalId} select`).focus();
+        }
+
+        // Fonction pour fermer un modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Fonction pour éditer un utilisateur
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                const newRole = prompt('Edit Role:', user.role);
+                if (newRole) {
+                    user.role = newRole;
+                    updateUserTable();
+                }
+            }
+        }
+
+        // Fonction pour afficher le modal d'édition d'un utilisateur
+        function showEditUserModal(userId, username, role, status) {
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUsername').value = username;
+            document.getElementById('editRole').value = role;
+            document.getElementById('editStatus').value = status;
+
+            const form = document.getElementById('editUserForm');
+            form.action = '/dashboard/user/edit/' + userId;
+
+            showModal('edituserModal');
+        }
+
+        // Fonction pour supprimer un utilisateur
+        function deleteUser(userId) {
+            const index = users.findIndex(u => u.id === userId);
+            if (index > -1) {
+                users.splice(index, 1);
+                updateUserTable();
+            }
+        }
+
+        // Fonction pour mettre à jour la table des tâches
+        function updateTaskTable() {
+            const tbody = document.getElementById('taskTableBody');
+            tbody.innerHTML = '';
+            tasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${task.id}</td>
+                <td>${task.name}</td>
+                <td>${task.status}</td>
+                <td>
+                    <button class="action-btn edit" onclick="editTask(${task.id})">Edit</button>
+                    <button class="action-btn delete" onclick="deleteTask(${task.id})">Delete</button>
+                </td>
+            `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Fonction pour ajouter une tâche
+        function addTask() {
+            const name = document.getElementById('taskName').value;
+            const status = document.getElementById('taskStatus').value;
+
+            const newTask = {
+                name: name,
+                status: status
+            };
+
+            // Envoi de la tâche au serveur (via AJAX)
+            fetch('/tasks/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newTask)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    tasks.push(data); // Ajouter la nouvelle tâche à la liste
+                    updateTaskTable(); // Mettre à jour la table des tâches
+                    closeModal('addtaskModal'); // Fermer le modal
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+
+        // Fonction pour éditer une tâche
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            document.getElementById('editTaskId').value = task.id;
+            document.getElementById('editTaskName').value = task.name;
+            document.getElementById('editTaskStatus').value = task.status;
+            showModal('edittaskModal');
+        }
+
+        function saveTask() {
+            const taskId = parseInt(document.getElementById('editTaskId').value);
+            const taskName = document.getElementById('editTaskName').value;
+            const taskStatus = document.getElementById('editTaskStatus').value;
+
+            const updatedTask = {
+                id: taskId,
+                name: taskName,
+                status: taskStatus
+            };
+
+            // Envoi des données au serveur (via AJAX)
+            fetch(`/tasks/edit/${TaskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedTask)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Mise à jour de la tâche dans la liste
+                    const index = tasks.findIndex(t => t.id === taskId);
+                    if (index !== -1) {
+                        tasks[index] = data;
+                    }
+                    updateTaskTable(); // Mettre à jour la table des tâches
+                    closeModal('edittaskModal'); // Fermer le modal
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+
+        // Fonction pour supprimer une tâche
+        function deleteTask(taskId) {
+            const index = tasks.findIndex(t => t.id === taskId);
+            if (index !== -1) {
+                tasks.splice(index, 1);
+                updateTaskTable();
+            }
+        }
+
+        // Initialiser la page
+        document.addEventListener('DOMContentLoaded', function () {
+            const section = "{{ section ?? 'home' }}";
+            showSection(section);
+        });
+    </script>
+
+</body>
+</html>

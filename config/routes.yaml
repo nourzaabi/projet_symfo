@@ -1,0 +1,60 @@
+admin_dashboard:
+    path: /dashboard
+    controller: App\Controller\AdminController::index
+
+admin_manage_users:
+    path: /dashboard/users
+    controller: App\Controller\AdminController::manageUsers
+
+admin_manage_tasks:
+    path: /dashboard/tasks
+    controller: App\Controller\AdminController::manageTasks
+
+admin_manage_events:
+    path: /dashboard/events
+    controller: App\Controller\AdminController::manageEvents
+admin_add_user:
+    path: /dashboard/user/add
+    controller: App\Controller\AdminController::addUser
+    methods: [POST]
+
+
+admin_edit_user:
+    path: /dashboard/user/edit/{id}
+    controller: App\Controller\AdminController::editUser
+    methods: [GET, POST]
+
+admin_delete_user:
+    path: /dashboard/user/delete/{id}
+    controller: App\Controller\AdminController::deleteUser
+    methods: [GET]
+
+admin_add_task:
+    path: /dashboard/task/add
+    controller: App\Controller\AdminController::addTask
+    methods: [POST]
+
+admin_edit_task:
+    path: /dashboard/task/edit/{id}
+    controller: App\Controller\AdminController::editTask
+    methods: [GET, POST]
+
+admin_delete_task:
+    path: /dashboard/task/delete/{id}
+    controller: App\Controller\AdminController::deleteTask
+    methods: [GET]
+
+admin_add_event:
+    path: /dashboard/event/add
+    controller: App\Controller\AdminController::addEvent
+    methods: [POST]
+
+admin_edit_event:
+    path: /dashboard/event/edit/{id}
+    controller: App\Controller\AdminController::editEvent
+    methods: [GET, POST]
+
+admin_delete_event:
+    path: /dashboard/event/delete/{id}
+    controller: App\Controller\AdminController::deleteEvent
+    methods: [GET]

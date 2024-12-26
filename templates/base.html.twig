@@ -1,0 +1,22 @@
+{# templates/base.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Employee Task Management{% endblock %}</title>
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="{{ path('employee_tasks', { 'id': 1 }) }}">Employee 1 Tasks</a></li>
+            <li><a href="{{ path('employee_tasks', { 'id': 2 }) }}">Employee 2 Tasks</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div>
+    {% block body %}{% endblock %}
+</div>
+</body>
+</html>

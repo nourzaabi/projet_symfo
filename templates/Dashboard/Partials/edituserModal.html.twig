@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="modal-content">
+        <h3>Edit User</h3>
+        {{ form_start(userForm) }}
+        {{ form_widget(userForm) }}
+        <button type="submit">Save Changes</button>
+        {{ form_end(userForm) }}
+        <button onclick="window.history.back()">Close</button>
+    </div>
+{% endblock %}
